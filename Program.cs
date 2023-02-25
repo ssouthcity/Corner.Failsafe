@@ -1,9 +1,15 @@
-using Corner.Failsafe;
+using Corner.Failsafe.Discord;
+using Discord.WebSocket;
 
 IHost host = Host.CreateDefaultBuilder(args)
-    .ConfigureServices(services =>
+    .ConfigureServices((context, services) =>
     {
-        services.AddHostedService<Worker>();
+        var configurationRoot = context.Configuration;
+
+        services.AddSingleton<DiscordSocketClient>();
+
+        services.Configure<DiscordSocketOptions>(configurationRoot.GetRequiredSection("Discord"));
+        services.AddHostedService<DiscordSocketService>();
     })
     .Build();
 
