@@ -61,13 +61,18 @@ public class NewsfeedService : BackgroundService, IDisposable
 
     private async Task PollArticles()
     {
+        _logger.LogInformation("Polling for articles....");
+
         var sources = await Task.WhenAll(_providers.Select(p => p.FetchArticles()));
 
-        var newArticleSincePrevPoll = sources
+        var newArticles = sources
             .SelectMany(source => source.Where(article => article.PublishedAt > _lastChecked))
-            .OrderBy(a => a.PublishedAt);
+            .OrderBy(a => a.PublishedAt)
+            .ToList();
 
-        foreach (var article in newArticleSincePrevPoll)
+        _logger.LogInformation($"Found {newArticles.Count} new articles since last poll");
+
+        foreach (var article in newArticles)
             await PublishArticle(article);
     }
 
