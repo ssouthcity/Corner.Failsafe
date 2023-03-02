@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: botson
+  name: failsafe
   labels:
-    app: botson
+    app: failsafe
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: botson
+      app: failsafe
   template:
     metadata:
       labels:
-        app: botson
+        app: failsafe
     spec:
       containers:
-        - name: botson
-          image: ssouthcity/botson:latest
+        - name: failsafe
+          image: ssouthcity/failsafe:latest
           envFrom:
             - secretRef:
                 name: failsafe-env
