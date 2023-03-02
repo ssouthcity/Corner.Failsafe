@@ -41,4 +41,4 @@ jobs:
         with:
           namespace: failsafe
           manifests: k8s
-          images: southcity/failsafe:${{ github.sha }}
+          images: ssouthcity/failsafe:${{ github.sha }}
