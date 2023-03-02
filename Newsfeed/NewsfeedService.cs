@@ -27,8 +27,8 @@ public class NewsfeedService : BackgroundService, IDisposable
     private readonly List<INewsProvider> _providers;
     private readonly ILogger<NewsfeedService> _logger;
 
-    private PeriodicTimer _timer = new PeriodicTimer(TimeSpan.FromSeconds(10));
-    private DateTime _lastChecked = DateTime.Now.Subtract(TimeSpan.FromDays(3));
+    private PeriodicTimer _timer = new PeriodicTimer(TimeSpan.FromMinutes(1));
+    private DateTime _lastChecked = DateTime.Now;
 
     public NewsfeedService(
         DiscordSocketClient client,
