@@ -28,7 +28,7 @@ public class NewsfeedService : BackgroundService, IDisposable
     private readonly ILogger<NewsfeedService> _logger;
 
     private PeriodicTimer _timer = new PeriodicTimer(TimeSpan.FromMinutes(1));
-    private DateTime _lastChecked = DateTime.Now;
+    private DateTime _lastTimeNewDetected = DateTime.Now;
 
     public NewsfeedService(
         DiscordSocketClient client,
@@ -66,7 +66,7 @@ public class NewsfeedService : BackgroundService, IDisposable
         var sources = await Task.WhenAll(_providers.Select(p => p.FetchArticles()));
 
         var newArticles = sources
-            .SelectMany(source => source.Where(article => article.PublishedAt > _lastChecked))
+            .SelectMany(source => source.Where(article => article.PublishedAt > _lastTimeNewDetected))
             .OrderBy(a => a.PublishedAt)
             .ToList();
 
@@ -74,15 +74,15 @@ public class NewsfeedService : BackgroundService, IDisposable
 
         foreach (var article in newArticles)
             await PublishArticle(article);
+
+        if (newArticles.Count > 0)
+            _lastTimeNewDetected = newArticles.Last().PublishedAt;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         while (await _timer.WaitForNextTickAsync(stoppingToken))
-        {
             await PollArticles();
-            _lastChecked = DateTime.Now;
-        }
     }
 
     public override void Dispose()
